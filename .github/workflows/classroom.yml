@@ -55,7 +55,7 @@ jobs:
       with:
         test-name: Constructor declaration
         setup-command: ''
-        command: grep -E '(Animal|Mammal|Bird|Reptile|Enclosure|Visitor|Zoo)\\(\\);'
+        command: grep -E '(Person|Student|Instructor|Course|Portal|ProgressReport)\\(\\);'
           *.h >/dev/null 2>&1 && echo 'PASS' || echo 'FAIL'
         timeout: 10
         max-score: 5
@@ -69,6 +69,51 @@ jobs:
           "PASS"; else print "FAIL"}'''
         timeout: 10
         max-score: 5
+    - name: Program Executes Without Crash
+      id: program-executes-without-crash
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Program Executes Without Crash
+        setup-command: g++ -std=c++11 -Wall -Wextra -o main main.cpp 2>/dev/null
+        command: timeout 5 ./main > /dev/null 2>&1 && echo 'EXECUTION_SUCCESS'
+        timeout: 10
+        max-score: 5
+    - name: Portal Initialization Message
+      id: portal-initialization-message
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Portal Initialization Message
+        setup-command: ''
+        command: "./main 2>&1 | grep -i 'portal' | grep -i 'initialized"
+        timeout: 10
+        max-score: 5
+    - name: Course Code Display
+      id: course-code-display
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Course Code Display
+        setup-command: "++ -std=c++11 -o main main.cpp 2>/dev/null"
+        command: "./main 2>&1 | grep -E 'Course:.*[A-Z]+[0-9]+'"
+        timeout: 10
+        max-score: 5
+    - name: Student Enrollment Section
+      id: student-enrollment-section
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Student Enrollment Section
+        setup-command: g++ -std=c++11 -o main main.cpp 2>/dev/null
+        command: "./main 2>&1 | grep -i 'enrolled'"
+        timeout: 10
+        max-score: 4
+    - name: Instructor Information
+      id: instructor-information
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Instructor Information
+        setup-command: g++ -std=c++11 -o main main.cpp 2>/dev/null
+        command: "./main 2>&1 | grep -i 'instructor'"
+        timeout: 10
+        max-score: 2
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
@@ -78,5 +123,10 @@ jobs:
         ALL-CLASSES-DECLARED_RESULTS: "${{steps.all-classes-declared.outputs.result}}"
         CONSTRUCTOR-DECLARATION_RESULTS: "${{steps.constructor-declaration.outputs.result}}"
         DESTRUCTOR-DECLARATION_RESULTS: "${{steps.destructor-declaration.outputs.result}}"
+        PROGRAM-EXECUTES-WITHOUT-CRASH_RESULTS: "${{steps.program-executes-without-crash.outputs.result}}"
+        PORTAL-INITIALIZATION-MESSAGE_RESULTS: "${{steps.portal-initialization-message.outputs.result}}"
+        COURSE-CODE-DISPLAY_RESULTS: "${{steps.course-code-display.outputs.result}}"
+        STUDENT-ENROLLMENT-SECTION_RESULTS: "${{steps.student-enrollment-section.outputs.result}}"
+        INSTRUCTOR-INFORMATION_RESULTS: "${{steps.instructor-information.outputs.result}}"
       with:
-        runners: file-structure-check,implementation-file-check,private-members-check,all-classes-declared,constructor-declaration,destructor-declaration
+        runners: file-structure-check,implementation-file-check,private-members-check,all-classes-declared,constructor-declaration,destructor-declaration,program-executes-without-crash,portal-initialization-message,course-code-display,student-enrollment-section,instructor-information
